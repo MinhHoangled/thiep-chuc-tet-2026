@@ -20,10 +20,11 @@
             --border-glow: rgba(255, 215, 0, 0.4);
         }
 
-        /* Allow user select on inputs/buttons to ensure interaction works */
+        /* RESET & INTERACTION FIXES */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { user-select: none; }
-        button, input { user-select: auto; }
+        /* Crucial: Allow interaction on inputs and buttons */
+        button, input { user-select: text; pointer-events: auto; }
 
         body {
             background: #000;
@@ -34,221 +35,152 @@
             align-items: center;
             justify-content: center;
             font-family: 'Playfair Display', serif;
-            perspective: 1200px; /* Increased perspective for less distortion */
+            perspective: 1200px;
         }
 
         #main-canvas {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
-            pointer-events: none; /* Pass clicks through canvas */
+            pointer-events: none;
         }
 
-        /* --- CINEMATIC GATES --- */
+        /* --- 1. GATES --- */
         #gate-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 999;
-            display: flex;
-            transition: opacity 1s ease; /* Fade out container */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 999; display: flex; transition: opacity 1s ease;
         }
-
         .gate-panel {
             width: 50%; height: 100%;
             background: linear-gradient(135deg, #4a0000 0%, #220000 100%);
-            position: relative;
-            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-            border-right: 2px solid #330000;
-            box-shadow: inset 0 0 50px #000;
+            position: relative; transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid #330000; box-shadow: inset 0 0 50px #000;
             display: flex; align-items: center; justify-content: center;
         }
-        
         .gate-left { transform-origin: left; border-right: 1px solid var(--gold-primary); }
         .gate-right { transform-origin: right; border-left: 1px solid var(--gold-primary); }
-
         .gate-pattern {
-            position: absolute; width: 80%; height: 80%;
-            border: 2px solid rgba(255, 215, 0, 0.1); top: 10%;
-            pointer-events: none;
+            position: absolute; width: 80%; height: 80%; border: 2px solid rgba(255, 215, 0, 0.1); top: 10%; pointer-events: none;
         }
         .gate-pattern::before {
-            content: ''; position: absolute;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 120px; height: 120px; border-radius: 50%;
-            border: 4px solid var(--gold-primary);
-            background: radial-gradient(circle, #800000, #300000);
-            box-shadow: 0 0 20px var(--gold-primary);
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--gold-primary);
+            background: radial-gradient(circle, #800000, #300000); box-shadow: 0 0 20px var(--gold-primary);
         }
-        
         .knocker {
-            width: 80px; height: 80px; border-radius: 50%;
-            border: 5px solid var(--gold-primary);
+            width: 80px; height: 80px; border-radius: 50%; border: 5px solid var(--gold-primary);
             position: absolute; top: 50%; transform: translateY(-50%);
-            cursor: pointer; transition: all 0.3s;
+            cursor: pointer; z-index: 1000; /* High Z to ensure clickable */
         }
-        .gate-left .knocker { right: -40px; z-index: 2; background: #500; }
-        .gate-right .knocker { left: -40px; z-index: 2; background: #500; }
-
+        .gate-left .knocker { right: -40px; background: #500; }
+        .gate-right .knocker { left: -40px; background: #500; }
         .gate-text {
             position: absolute; width: 100%; text-align: center; top: 70%;
             color: var(--gold-primary); font-size: 1.2rem; letter-spacing: 4px;
             text-transform: uppercase; animation: pulseText 2s infinite; pointer-events: none;
         }
-
-        /* Opening Animation Classes */
         .gates-open .gate-left { transform: perspective(1000px) rotateY(-110deg); }
         .gates-open .gate-right { transform: perspective(1000px) rotateY(110deg); }
-        
-        /* Helper class to remove gates from DOM flow */
         .gates-removed { display: none !important; }
 
-        /* --- 3D CARD CONTAINER --- */
+        /* --- 2. 3D CARD --- */
         #scene {
-            position: relative;
-            z-index: 10;
-            width: 90%; max-width: 500px;
-            height: auto;
-            transform-style: preserve-3d;
-            display: none; opacity: 0;
-            transition: opacity 1s ease;
+            position: relative; z-index: 10;
+            width: 90%; max-width: 500px; height: auto;
+            transform-style: preserve-3d; display: none; opacity: 0; transition: opacity 1s ease;
         }
-
         .card-3d {
             position: relative;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glow);
-            border-radius: 30px;
-            padding: 3rem 2rem;
-            text-align: center;
+            border: 1px solid var(--border-glow); border-radius: 30px;
+            padding: 3rem 2rem; text-align: center;
             transform-style: preserve-3d;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 30px rgba(255, 215, 0, 0.05);
-            transition: transform 0.1s linear; /* Smooths out jitter */
+            transition: transform 0.2s ease-out; /* Smooth movement */
         }
-
-        .card-3d::after {
-            content: ""; position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0; border-radius: 30px;
-            background: linear-gradient(125deg, transparent 20%, rgba(255,255,255,0.1) 30%, rgba(255,255,255,0.0) 40%);
-            pointer-events: none; transform: translateZ(1px);
-        }
-
         .pop-out { transform: translateZ(40px); }
         .pop-out-deep { transform: translateZ(70px); }
 
         .horse-svg {
-            width: 120px; height: 120px;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+            width: 120px; height: 120px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
             animation: floatHorse 6s ease-in-out infinite;
         }
         .horse-path {
             fill: none; stroke: var(--gold-primary); stroke-width: 2;
-            stroke-dasharray: 1000; stroke-dashoffset: 0;
-            animation: drawLine 3s ease forwards;
+            stroke-dasharray: 1000; stroke-dashoffset: 0; animation: drawLine 3s ease forwards;
         }
-
         .main-title {
             font-family: 'Dancing Script', cursive; font-size: 3.5rem;
             background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
             -webkit-background-clip: text; color: transparent;
             margin: 1rem 0; text-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-
         .wish-container {
-            min-height: 80px; font-size: 1.1rem; line-height: 1.6;
-            color: #eee; margin-bottom: 2rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            min-height: 80px; font-size: 1.1rem; line-height: 1.6; color: #eee; margin-bottom: 2rem;
         }
-
         .cursor {
-            display: inline-block; width: 2px; height: 1.2em;
-            background-color: var(--gold-primary);
+            display: inline-block; width: 2px; height: 1.2em; background-color: var(--gold-primary);
             animation: blink 1s step-end infinite; vertical-align: text-bottom;
         }
 
+        /* --- BUTTONS (FIXED) --- */
         .btn-group {
             display: flex; gap: 15px; justify-content: center;
-            transform: translateZ(60px); /* Push buttons further out */
-            position: relative;
-            z-index: 100; /* Ensure high z-index */
+            transform: translateZ(80px); /* Push out further */
+            position: relative; z-index: 999; /* Max Z-index */
         }
-
         .vip-btn {
-            background: rgba(0,0,0,0.3); /* Slight background for better hit target */
-            border: 1px solid var(--gold-primary);
-            color: var(--gold-primary);
-            padding: 12px 25px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            pointer-events: auto; /* Force clickable */
+            background: rgba(0,0,0,0.6); /* Darker bg for visibility */
+            border: 1px solid var(--gold-primary); color: var(--gold-primary);
+            padding: 12px 25px; border-radius: 50px; cursor: pointer;
+            font-family: 'Montserrat', sans-serif; font-size: 0.8rem;
+            letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s;
+            position: relative; overflow: hidden;
+            pointer-events: auto !important; /* Force Clickable */
         }
+        .vip-btn:hover { background: var(--gold-primary); color: #000; box-shadow: 0 0 30px var(--gold-primary); }
 
-        .vip-btn::before {
-            content: ''; position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent);
-            transition: 0.5s;
-            pointer-events: none; /* Ignore clicks on sheen */
-        }
-        .vip-btn:hover::before { left: 100%; }
-        .vip-btn:hover {
-            background: var(--gold-primary); color: #000;
-            box-shadow: 0 0 30px var(--gold-primary);
-        }
-
-        /* Modal */
-        #fortune-modal {
+        /* --- MODALS (INPUT & FORTUNE) --- */
+        .modal-overlay {
             position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) translateZ(150px) scale(0); /* Higher Z */
-            background: #1a0000; border: 2px solid var(--gold-primary);
-            padding: 2rem; width: 85%; border-radius: 10px;
-            text-align: center; opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none; box-shadow: 0 0 50px #000;
-            z-index: 200;
+            transform: translate(-50%, -50%) translateZ(150px) scale(0);
+            background: rgba(20, 0, 0, 0.95); border: 2px solid var(--gold-primary);
+            padding: 2rem; width: 85%; border-radius: 15px; text-align: center;
+            opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none; z-index: 2000;
         }
-        #fortune-modal.active {
-            transform: translate(-50%, -50%) translateZ(150px) scale(1);
-            opacity: 1; pointer-events: auto;
+        .modal-overlay.active { transform: translate(-50%, -50%) translateZ(150px) scale(1); opacity: 1; pointer-events: auto; }
+        
+        .modal-title { color: #fff; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 1rem; }
+        .fortune-text { font-family: 'Dancing Script'; font-size: 1.5rem; color: var(--gold-primary); margin-bottom: 1.5rem; }
+        
+        /* Custom Input Styling */
+        .custom-input {
+            background: transparent; border: none; border-bottom: 2px solid #555;
+            color: var(--gold-primary); font-size: 1.2rem; text-align: center;
+            width: 100%; padding: 10px; margin-bottom: 20px; outline: none;
+            font-family: 'Playfair Display', serif;
         }
-        .fortune-text { font-family: 'Dancing Script'; font-size: 1.5rem; color: var(--gold-primary); margin-bottom: 1rem; }
+        .custom-input:focus { border-bottom-color: var(--gold-primary); }
 
         @keyframes pulseText { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
         @keyframes floatHorse { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-        @media (max-width: 480px) {
-            .main-title { font-size: 2.5rem; }
-            .card-3d { padding: 2rem 1rem; }
-            .gate-text { font-size: 0.9rem; }
-        }
+        @media (max-width: 480px) { .main-title { font-size: 2.5rem; } .card-3d { padding: 2rem 1rem; } }
     </style>
 </head>
 <body>
-
     <canvas id="main-canvas"></canvas>
 
-    <!-- 1. CINEMATIC GATES -->
+    <!-- GATES -->
     <div id="gate-overlay" onclick="openGates()">
-        <div class="gate-panel gate-left">
-            <div class="gate-pattern"></div>
-            <div class="knocker"></div>
-        </div>
-        <div class="gate-panel gate-right">
-            <div class="gate-pattern"></div>
-            <div class="knocker"></div>
-        </div>
-        <div class="gate-text">CHẠM ĐỂ MỞ CỔNG TÀI LỘC</div>
+        <div class="gate-panel gate-left"><div class="gate-pattern"></div><div class="knocker"></div></div>
+        <div class="gate-panel gate-right"><div class="gate-pattern"></div><div class="knocker"></div></div>
+        <div class="gate-text">CHẠM VÀO CỬA ĐỂ MỞ</div>
     </div>
 
-    <!-- 2. 3D SCENE -->
+    <!-- 3D SCENE -->
     <div id="scene">
         <div class="card-3d" id="card">
             <div class="pop-out-deep">
@@ -266,16 +198,25 @@
                 <span id="typewriter-text"></span><span class="cursor"></span>
             </div>
 
-            <div class="btn-group">
+            <!-- BUTTONS: Mouseenter triggers 'freeze' logic -->
+            <div class="btn-group" onmouseenter="freezeCard()" onmouseleave="unfreezeCard()">
                 <button class="vip-btn" onclick="drawFortune()">Gieo Quẻ</button>
-                <button class="vip-btn" onclick="shareCard()">Gửi Thiệp</button>
+                <button class="vip-btn" onclick="openShareModal()">Gửi Thiệp</button>
             </div>
             
-            <!-- Hidden Fortune Modal -->
-            <div id="fortune-modal">
-                <div style="color: #fff; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">Quẻ Bói Đầu Năm</div>
+            <!-- FORTUNE MODAL -->
+            <div id="fortune-modal" class="modal-overlay">
+                <div class="modal-title">Quẻ Bói Đầu Năm</div>
                 <div class="fortune-text" id="fortune-result"></div>
-                <button class="vip-btn" style="font-size: 0.6rem; padding: 8px 16px;" onclick="closeFortune()">Cảm ơn</button>
+                <button class="vip-btn" style="font-size: 0.7rem;" onclick="closeAllModals()">Cảm ơn</button>
+            </div>
+
+            <!-- SHARE MODAL (INPUT NAME) -->
+            <div id="share-modal" class="modal-overlay">
+                <div class="modal-title">Gửi Lời Chúc Tới</div>
+                <input type="text" id="name-input" class="custom-input" placeholder="Nhập tên người nhận (VD: Sếp, Vợ)">
+                <button class="vip-btn" style="font-size: 0.7rem;" onclick="generateLink()">Sao chép Link</button>
+                <button class="vip-btn" style="font-size: 0.7rem; border-color: #555; color: #aaa;" onclick="closeAllModals()">Đóng</button>
             </div>
         </div>
     </div>
@@ -288,75 +229,61 @@
         const baseWish = toName 
             ? `Năm mới chúc ${toName} tấn tài tấn lộc, công danh rạng rỡ, vạn sự hanh thông.` 
             : "Cung chúc tân xuân phước vĩnh cửu. Chúc trong gia quyến được an khương.";
-
         if(toName) recipientDisplay.innerHTML = `Gửi ${toName}`;
         else recipientDisplay.innerHTML = "Vạn Sự Như Ý";
 
         // --- 2. GATES LOGIC ---
         let isOpened = false;
         function openGates() {
-            if(isOpened) return;
-            isOpened = true;
-            
+            if(isOpened) return; isOpened = true;
             document.body.classList.add('gates-open');
             launchMassiveFireworks();
-
             setTimeout(() => {
                 const scene = document.getElementById('scene');
                 scene.style.display = 'block';
                 void scene.offsetWidth; scene.style.opacity = '1';
-                
-                // COMPLETELY REMOVE GATES to prevent click blocking
-                setTimeout(() => {
-                    document.getElementById('gate-overlay').classList.add('gates-removed');
-                }, 1000);
-
+                setTimeout(() => { document.getElementById('gate-overlay').classList.add('gates-removed'); }, 800);
                 typeWriter(baseWish, 0);
             }, 800);
         }
 
-        function launchMassiveFireworks() {
-            for(let i=0; i<10; i++) {
-                setTimeout(() => {
-                    fireworks.push(new Firework(
-                        window.innerWidth * 0.2 + Math.random() * window.innerWidth * 0.6,
-                        window.innerHeight * 0.3 + Math.random() * window.innerHeight * 0.4
-                    ));
-                }, i * 200);
-            }
-        }
-
-        // --- 3. 3D EFFECT (OPTIMIZED FOR CLICKS) ---
+        // --- 3. 3D & FREEZE LOGIC (THE FIX) ---
         const card = document.getElementById('card');
         const container = document.body;
+        let isFrozen = false; // Flag to stop rotation
+
+        function freezeCard() { isFrozen = true; card.style.transform = `rotateY(0deg) rotateX(0deg)`; }
+        function unfreezeCard() { isFrozen = false; }
 
         container.addEventListener('mousemove', (e) => {
-            if(!isOpened) return;
-            // Reduced sensitivity (divided by 40 instead of 25) to prevent jitter during clicks
+            if(!isOpened || isFrozen) return; // Don't move if frozen
             let xAxis = (window.innerWidth / 2 - e.pageX) / 40;
             let yAxis = (window.innerHeight / 2 - e.pageY) / 40;
             card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
         });
 
         window.addEventListener("deviceorientation", (e) => {
-            if(!isOpened) return;
-            let yAxis = e.beta / 3; 
-            let xAxis = e.gamma / 3; 
+            if(!isOpened || isFrozen) return;
+            let yAxis = e.beta / 3; let xAxis = e.gamma / 3; 
             if (xAxis > 15) xAxis = 15; if (xAxis < -15) xAxis = -15;
             if (yAxis > 15) yAxis = 15; if (yAxis < -15) yAxis = -15;
             card.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg)`;
         });
 
-        // --- 4. UTILS ---
+        // --- 4. MODALS & FEATURES ---
         function typeWriter(text, i) {
             if (i < text.length) {
                 document.getElementById("typewriter-text").innerHTML += text.charAt(i);
-                setTimeout(() => typeWriter(text, i + 1), 50);
-            } else {
-                document.querySelector(".cursor").style.display = 'none';
-            }
+                setTimeout(() => typeWriter(text, i + 1), 40);
+            } else { document.querySelector(".cursor").style.display = 'none'; }
         }
 
+        function closeAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('active'));
+            unfreezeCard();
+        }
+
+        // Fortune Logic
         const fortunes = [
             "Đại Cát: Tiền vào như nước, tình duyên phơi phới.",
             "Thượng Thượng: Quý nhân phù trợ, mọi việc suôn sẻ.",
@@ -364,92 +291,89 @@
             "Đào Hoa: Tình duyên rực rỡ, người cũ không rủ cũng tới.",
             "Hỷ Thần: Trong nhà có tin vui, thêm người thêm của."
         ];
-        
         function drawFortune() {
-            const modal = document.getElementById('fortune-modal');
+            freezeCard(); // Stop moving while reading
             const result = document.getElementById('fortune-result');
             result.innerText = fortunes[Math.floor(Math.random() * fortunes.length)];
-            modal.classList.add('active');
+            document.getElementById('fortune-modal').classList.add('active');
             launchMassiveFireworks();
         }
 
-        function closeFortune() {
-            document.getElementById('fortune-modal').classList.remove('active');
+        // Share Logic
+        function openShareModal() {
+            freezeCard(); // Stop moving while typing
+            document.getElementById('share-modal').classList.add('active');
+            setTimeout(() => document.getElementById('name-input').focus(), 100);
         }
 
-        function shareCard() {
-            let shareUrl = window.location.href;
-            const urlParams = new URLSearchParams(window.location.search);
-            if (!urlParams.has('to')) {
-                const name = prompt("Nhập tên người nhận:");
-                if (name) {
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('to', name);
-                    shareUrl = url.toString();
-                } else return;
-            }
-            navigator.clipboard.writeText(shareUrl)
-                .then(() => alert("Đã sao chép link! Gửi ngay thôi!"))
-                .catch(() => prompt("Copy link bên dưới:", shareUrl));
+        function generateLink() {
+            const name = document.getElementById('name-input').value.trim();
+            if(!name) { alert("Bạn chưa nhập tên!"); return; }
+            
+            const url = new URL(window.location.href);
+            url.searchParams.set('to', name);
+            const shareUrl = url.toString();
+
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert("Đã sao chép Link! Gửi ngay cho " + name + " nhé.");
+                closeAllModals();
+            }).catch(() => {
+                prompt("Copy link bên dưới:", shareUrl);
+                closeAllModals();
+            });
         }
 
-        // --- 5. VISUALS (CANVAS) ---
+        // --- 5. CANVAS ---
         const canvas = document.getElementById('main-canvas');
         const ctx = canvas.getContext('2d');
         let width, height, fireworks = [], particles = [];
+        const random = (min, max) => Math.random() * (max - min) + min;
 
         function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
         resize(); window.addEventListener('resize', resize);
         
-        const random = (min, max) => Math.random() * (max - min) + min;
+        function launchMassiveFireworks() {
+            for(let i=0; i<8; i++) {
+                setTimeout(() => {
+                    fireworks.push(new Firework(
+                        width * 0.2 + Math.random() * width * 0.6,
+                        height * 0.2 + Math.random() * height * 0.4
+                    ));
+                }, i * 200);
+            }
+        }
 
         class Firework {
             constructor(tx, ty) {
                 this.x = width/2; this.y = height; this.tx = tx; this.ty = ty;
-                this.speed = 5; 
-                this.angle = Math.atan2(ty - height, tx - width/2);
-                this.coords = [];
+                this.speed = 5; this.angle = Math.atan2(ty - height, tx - width/2); this.coords = [];
             }
             update(i) {
                 this.coords.push([this.x, this.y]);
                 if(this.coords.length > 4) this.coords.shift();
                 this.x += Math.cos(this.angle) * this.speed;
                 this.y += Math.sin(this.angle) * this.speed;
-                if (this.y <= this.ty) {
-                    createParticles(this.tx, this.ty);
-                    fireworks.splice(i, 1);
-                }
+                if (this.y <= this.ty) { createParticles(this.tx, this.ty); fireworks.splice(i, 1); }
             }
             draw() {
-                ctx.beginPath();
-                if(this.coords.length) ctx.moveTo(this.coords[0][0], this.coords[0][1]);
-                ctx.lineTo(this.x, this.y);
-                ctx.strokeStyle = '#FFD700'; ctx.stroke();
+                ctx.beginPath(); if(this.coords.length) ctx.moveTo(this.coords[0][0], this.coords[0][1]);
+                ctx.lineTo(this.x, this.y); ctx.strokeStyle = '#FFD700'; ctx.stroke();
             }
         }
-
         class Particle {
             constructor(x, y) {
-                this.x = x; this.y = y; this.alpha = 1;
-                this.angle = random(0, Math.PI*2); this.vel = random(1, 5);
-                this.hue = random(0, 360);
+                this.x = x; this.y = y; this.alpha = 1; this.angle = random(0, Math.PI*2); this.vel = random(1, 6); this.hue = random(0, 360);
             }
             update(i) {
-                this.x += Math.cos(this.angle) * this.vel;
-                this.y += Math.sin(this.angle) * this.vel + 1;
-                this.alpha -= 0.02;
-                if (this.alpha <= 0) particles.splice(i, 1);
+                this.x += Math.cos(this.angle) * this.vel; this.y += Math.sin(this.angle) * this.vel + 0.5;
+                this.alpha -= 0.02; if (this.alpha <= 0) particles.splice(i, 1);
             }
             draw() {
-                ctx.globalAlpha = this.alpha;
-                ctx.fillStyle = `hsl(${this.hue}, 100%, 60%)`;
-                ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill();
-                ctx.globalAlpha = 1;
+                ctx.globalAlpha = this.alpha; ctx.fillStyle = `hsl(${this.hue}, 100%, 60%)`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1;
             }
         }
-
         function createParticles(x, y) { for(let i=0; i<30; i++) particles.push(new Particle(x, y)); }
-
         function loop() {
             requestAnimationFrame(loop);
             ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; ctx.fillRect(0, 0, width, height);
