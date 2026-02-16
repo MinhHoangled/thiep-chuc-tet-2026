@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chúc Mừng Năm Mới 2026 - Xuân Bính Ngọ</title>
+    <meta name="theme-color" content="#1F1C18">
+    <meta name="description" content="Thiệp chúc mừng năm mới Bính Ngọ 2026">
+    
+    <!-- Typography: Importing Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-gradient-start: #1F1C18;
+            --bg-gradient-end: #8E0E00;
+            --gold-primary: #FFD700;
+            --gold-secondary: #DAA520;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 215, 0, 0.15);
+            --font-script: 'Dancing Script', cursive;
+            --font-serif: 'Playfair Display', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: #fff;
+            font-family: var(--font-serif);
+            height: 100vh;
+            overflow: hidden; /* Prevent scroll for immersive feel */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Background Canvas Layer */
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Glassmorphism Card Container */
+        .card-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+            padding: 3rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            animation: floatUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        /* SVG Horse Animation */
+        .horse-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 1.5rem;
+        }
+
+        .horse-path {
+            fill: none;
+            stroke: var(--gold-primary);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 2.5s ease-out forwards 0.5s, fillGold 1s ease-out forwards 2.5s;
+        }
+
+        /* Typography Styling */
+        .year-label {
+            font-family: var(--font-serif);
+            letter-spacing: 4px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .main-title {
+            font-family: var(--font-script);
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #FFF, var(--gold-primary), #FFF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .greeting-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #e0e0e0;
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+        }
+
+        /* Dynamic Name Highlight */
+        .recipient-name {
+            color: var(--gold-primary);
+            font-weight: 700;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 2px;
+        }
+
+        /* Interactive Elements */
+        .action-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--gold-primary);
+            color: #1F1C18;
+            box-shadow: 0 0 15px var(--gold-primary);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(30, 30, 30, 0.9);
+            color: var(--gold-primary);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid var(--gold-secondary);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Animations */
+        @keyframes floatUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+        
+        @keyframes fillGold {
+            to { fill: rgba(255, 215, 0, 0.1); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 480px) {
+            .main-title { font-size: 2.5rem; }
+            .card-container { width: 95%; padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Performance Critical: Canvas Layer -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- UI Layer -->
+    <div class="card-container">
+        <!-- Stylized Abstract Horse SVG -->
+        <svg class="horse-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Artistic Abstract Horse Head Profile -->
+            <path class="horse-path" d="M25,80 C25,80 20,70 30,60 C40,50 35,40 35,30 C35,15 50,5 60,10 C70,15 75,25 70,35 C65,45 80,50 85,60 C90,70 80,85 80,85 L70,80 C70,80 75,65 60,60 C45,55 45,75 45,75 L25,80 Z M60,10 C60,10 60,0 50,5 M35,30 C35,30 25,25 30,15" />
+        </svg>
+
+        <div class="year-label">Xuân Bính Ngọ • 2026</div>
+        
+        <h1 class="main-title" id="greeting-title">Chúc Mừng Năm Mới</h1>
+        
+        <p class="greeting-text">
+            Kính chúc một năm mới An Khang Thịnh Vượng, Vạn Sự Như Ý, Tấn Tài Tấn Lộc.
+        </p>
+
+        <div class="action-group">
+            <button class="btn" onclick="shareCard()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                Gửi Lời Chúc
+            </button>
+        </div>
+    </div>
+
+    <div id="toast">Đã sao chép link thiệp!</div>
+
+    <script>
+        /**
+         * LOGIC LAYER: Dynamic Personalization & Interaction
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleEl = document.getElementById('greeting-title');
+            
+            // 1. Parse URL Parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const recipientName = urlParams.get('to');
+
+            // 2. Dynamic Rendering
+            if (recipientName) {
+                // Sanitize input to prevent basic HTML injection
+                const safeName = recipientName.replace(/[<>]/g, ""); 
+                titleEl.innerHTML = `Chúc ${safeName}<br>Năm Mới An Khang`;
+                document.title = `Lời chúc Tết gửi tới ${safeName}`;
+            } else {
+                titleEl.innerHTML = `Chúc Mừng Năm Mới<br>2026`;
+            }
+
+            // 3. Canvas Animation Engine (Golden Embers)
+            initCanvas();
+        });
+
+        // Share Functionality
+        function shareCard() {
+            let shareUrl = window.location.href;
+            
+            // If no name is set, prompt user to create one
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.has('to')) {
+                const name = prompt("Nhập tên người bạn muốn chúc (Ví dụ: Sếp, Vợ Yêu, Anh Tuấn):");
+                if (name) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('to', name);
+                    shareUrl = url.toString();
+                    
+                    // Optional: Redirect to show the user what it looks like
+                    // window.location.href = shareUrl; 
+                } else {
+                    return; // Cancelled
+                }
+            }
+
+            // Clipboard API
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                showToast("Đã sao chép link! Gửi ngay cho người ấy nhé.");
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                prompt("Hãy copy link này gửi cho bạn bè:", shareUrl);
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        /**
+         * GRAPHICS ENGINE: HTML5 Canvas Particle System
+         */
+        function initCanvas() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+
+            // Configuration
+            const particleCount = window.innerWidth < 600 ? 40 : 80; // Performance tuning for mobile
+            const colors = ['#FFD700', '#FFA500', '#FF4500', '#FFF8DC']; // Gold palette
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+
+            class Particle {
+                constructor() {
+                    this.reset();
+                    // Initial random y to fill screen immediately
+                    this.y = Math.random() * height; 
+                }
+
+                reset() {
+                    this.x = Math.random() * width;
+                    this.y = height + Math.random() * 100;
+                    this.speed = 0.5 + Math.random() * 1.5;
+                    this.size = Math.random() * 3;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                    this.wobble = Math.random() * Math.PI * 2;
+                    this.wobbleSpeed = 0.02 + Math.random() * 0.03;
+                    this.opacity = 0;
+                    this.fadeIn = true;
+                }
+
+                update() {
+                    // Move Up
+                    this.y -= this.speed;
+                    
+                    // Wobble side to side
+                    this.wobble += this.wobbleSpeed;
+                    this.x += Math.sin(this.wobble) * 0.5;
+
+                    // Opacity Logic (Fade In -> Fade Out)
+                    if (this.fadeIn) {
+                        this.opacity += 0.02;
+                        if (this.opacity >= 1) this.fadeIn = false;
+                    } else {
+                        // Fade out near top
+                        if (this.y < height * 0.2) {
+                            this.opacity -= 0.02;
+                        }
+                    }
+
+                    // Reset if off screen or invisible
+                    if (this.y < -10 || this.opacity <= 0) {
+                        this.reset();
+                    }
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.globalAlpha = Math.max(0, this.opacity);
+                    ctx.fill();
+                    
+                    // Add glow
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = this.color;
+                }
+            }
+
+            // Init
+            resize();
+            window.addEventListener('resize', resize);
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+
+            // Animation Loop
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                // Composite operation for "glowing" overlap effect
+                ctx.globalCompositeOperation = 'screen'; 
+                
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+
+                ctx.globalCompositeOperation = 'source-over';
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+    </script>
+</body>
+</html>
