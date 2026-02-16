@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chúc Mừng Năm Mới 2026 - Xuân Bính Ngọ</title>
-    <meta name="theme-color" content="#0f0c29">
+    <meta name="theme-color" content="#3a0000">
     
     <!-- Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,19 +15,18 @@
         :root {
             --gold-primary: #FFD700;
             --gold-shine: #FFFACD;
-            --red-deep: #8E0E00;
-            --glass-bg: rgba(20, 20, 20, 0.4);
-            --border-glow: rgba(255, 215, 0, 0.4);
+            --red-deep: #5e0000;
+            --glass-bg: rgba(60, 0, 0, 0.6); /* Red tinted glass */
+            --border-glow: rgba(255, 215, 0, 0.5);
         }
 
-        /* RESET & INTERACTION FIXES */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { user-select: none; }
-        /* Crucial: Allow interaction on inputs and buttons */
         button, input { user-select: text; pointer-events: auto; }
 
         body {
-            background: #000;
+            /* TET THEME BACKGROUND */
+            background: radial-gradient(circle at center, #4a0000 0%, #1a0000 100%);
             color: #fff;
             height: 100vh;
             overflow: hidden;
@@ -35,7 +34,7 @@
             align-items: center;
             justify-content: center;
             font-family: 'Playfair Display', serif;
-            perspective: 1200px;
+            perspective: 1000px;
         }
 
         #main-canvas {
@@ -52,7 +51,7 @@
         }
         .gate-panel {
             width: 50%; height: 100%;
-            background: linear-gradient(135deg, #4a0000 0%, #220000 100%);
+            background: linear-gradient(135deg, #600000 0%, #2a0000 100%);
             position: relative; transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
             border-right: 2px solid #330000; box-shadow: inset 0 0 50px #000;
             display: flex; align-items: center; justify-content: center;
@@ -60,114 +59,135 @@
         .gate-left { transform-origin: left; border-right: 1px solid var(--gold-primary); }
         .gate-right { transform-origin: right; border-left: 1px solid var(--gold-primary); }
         .gate-pattern {
-            position: absolute; width: 80%; height: 80%; border: 2px solid rgba(255, 215, 0, 0.1); top: 10%; pointer-events: none;
+            position: absolute; width: 80%; height: 80%; border: 2px solid rgba(255, 215, 0, 0.15); top: 10%; pointer-events: none;
         }
         .gate-pattern::before {
             content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--gold-primary);
-            background: radial-gradient(circle, #800000, #300000); box-shadow: 0 0 20px var(--gold-primary);
+            width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--gold-primary);
+            background: radial-gradient(circle, #800000, #300000); box-shadow: 0 0 30px var(--gold-primary);
         }
         .knocker {
-            width: 80px; height: 80px; border-radius: 50%; border: 5px solid var(--gold-primary);
+            width: 90px; height: 90px; border-radius: 50%; border: 6px solid var(--gold-primary);
             position: absolute; top: 50%; transform: translateY(-50%);
-            cursor: pointer; z-index: 1000; /* High Z to ensure clickable */
+            cursor: pointer; z-index: 1000; background: #600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
-        .gate-left .knocker { right: -40px; background: #500; }
-        .gate-right .knocker { left: -40px; background: #500; }
+        .gate-left .knocker { right: -45px; }
+        .gate-right .knocker { left: -45px; }
         .gate-text {
-            position: absolute; width: 100%; text-align: center; top: 70%;
-            color: var(--gold-primary); font-size: 1.2rem; letter-spacing: 4px;
+            position: absolute; width: 100%; text-align: center; top: 75%;
+            color: var(--gold-primary); font-size: 1.1rem; letter-spacing: 3px;
             text-transform: uppercase; animation: pulseText 2s infinite; pointer-events: none;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
         }
         .gates-open .gate-left { transform: perspective(1000px) rotateY(-110deg); }
         .gates-open .gate-right { transform: perspective(1000px) rotateY(110deg); }
         .gates-removed { display: none !important; }
 
-        /* --- 2. 3D CARD --- */
+        /* --- 2. STATIC CARD (NO ROTATION) --- */
         #scene {
             position: relative; z-index: 10;
             width: 90%; max-width: 500px; height: auto;
-            transform-style: preserve-3d; display: none; opacity: 0; transition: opacity 1s ease;
+            display: none; opacity: 0; transition: opacity 1s ease;
         }
         .card-3d {
             position: relative;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glow); border-radius: 30px;
-            padding: 3rem 2rem; text-align: center;
-            transform-style: preserve-3d;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 30px rgba(255, 215, 0, 0.05);
-            transition: transform 0.2s ease-out; /* Smooth movement */
+            background: var(--glass-bg); /* Red glass */
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 2px solid var(--border-glow); border-radius: 24px;
+            padding: 2.5rem 2rem; text-align: center;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6), inset 0 0 40px rgba(255, 215, 0, 0.1);
+            /* NO TRANSFORM HERE */
         }
-        .pop-out { transform: translateZ(40px); }
-        .pop-out-deep { transform: translateZ(70px); }
+        /* Inner decorative border */
+        .card-3d::before {
+            content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px dashed rgba(255, 215, 0, 0.3); border-radius: 18px; pointer-events: none;
+        }
 
         .horse-svg {
-            width: 120px; height: 120px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-            animation: floatHorse 6s ease-in-out infinite;
+            width: 110px; height: 110px; filter: drop-shadow(0 0 15px rgba(255,215,0,0.6));
+            margin-bottom: 1rem;
         }
         .horse-path {
             fill: none; stroke: var(--gold-primary); stroke-width: 2;
             stroke-dasharray: 1000; stroke-dashoffset: 0; animation: drawLine 3s ease forwards;
         }
+        
         .main-title {
-            font-family: 'Dancing Script', cursive; font-size: 3.5rem;
-            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            -webkit-background-clip: text; color: transparent;
-            margin: 1rem 0; text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: 'Dancing Script', cursive; font-size: 3.2rem;
+            /* Solid Gold for better visibility on Red */
+            color: var(--gold-primary);
+            margin: 0.5rem 0 1rem 0; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            line-height: 1.2;
         }
+        
+        .year-text {
+            font-size: 0.9rem; letter-spacing: 4px; text-transform: uppercase; 
+            color: #ffd700; opacity: 0.8; margin-bottom: 5px;
+        }
+
         .wish-container {
-            min-height: 80px; font-size: 1.1rem; line-height: 1.6; color: #eee; margin-bottom: 2rem;
+            min-height: 70px; font-size: 1.15rem; line-height: 1.6; color: #fff; margin-bottom: 2rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
         .cursor {
             display: inline-block; width: 2px; height: 1.2em; background-color: var(--gold-primary);
             animation: blink 1s step-end infinite; vertical-align: text-bottom;
         }
 
-        /* --- BUTTONS (FIXED) --- */
+        /* --- BUTTONS --- */
         .btn-group {
             display: flex; gap: 15px; justify-content: center;
-            transform: translateZ(80px); /* Push out further */
-            position: relative; z-index: 999; /* Max Z-index */
+            position: relative; z-index: 20;
         }
         .vip-btn {
-            background: rgba(0,0,0,0.6); /* Darker bg for visibility */
+            background: linear-gradient(to bottom, #800000, #500000);
             border: 1px solid var(--gold-primary); color: var(--gold-primary);
-            padding: 12px 25px; border-radius: 50px; cursor: pointer;
-            font-family: 'Montserrat', sans-serif; font-size: 0.8rem;
-            letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s;
-            position: relative; overflow: hidden;
-            pointer-events: auto !important; /* Force Clickable */
+            padding: 12px 28px; border-radius: 50px; cursor: pointer;
+            font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 600;
+            letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .vip-btn:hover { background: var(--gold-primary); color: #000; box-shadow: 0 0 30px var(--gold-primary); }
+        .vip-btn:hover { 
+            background: var(--gold-primary); color: #500000; 
+            box-shadow: 0 0 20px var(--gold-primary); transform: translateY(-2px);
+        }
 
-        /* --- MODALS (INPUT & FORTUNE) --- */
+        /* --- MODALS --- */
         .modal-overlay {
             position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) translateZ(150px) scale(0);
-            background: rgba(20, 0, 0, 0.95); border: 2px solid var(--gold-primary);
-            padding: 2rem; width: 85%; border-radius: 15px; text-align: center;
-            opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(40, 0, 0, 0.98); border: 2px solid var(--gold-primary);
+            padding: 2rem; width: 90%; max-width: 400px; border-radius: 16px; text-align: center;
+            opacity: 0; transition: all 0.3s ease;
             pointer-events: none; z-index: 2000;
+            box-shadow: 0 0 50px #000;
         }
-        .modal-overlay.active { transform: translate(-50%, -50%) translateZ(150px) scale(1); opacity: 1; pointer-events: auto; }
+        .modal-overlay.active { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
         
-        .modal-title { color: #fff; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 1rem; }
-        .fortune-text { font-family: 'Dancing Script'; font-size: 1.5rem; color: var(--gold-primary); margin-bottom: 1.5rem; }
+        .modal-title { color: var(--gold-primary); text-transform: uppercase; font-size: 1rem; letter-spacing: 2px; margin-bottom: 1rem; font-weight: bold; }
+        .fortune-text { font-family: 'Dancing Script'; font-size: 1.6rem; color: #fff; margin-bottom: 1.5rem; line-height: 1.4; }
         
-        /* Custom Input Styling */
         .custom-input {
-            background: transparent; border: none; border-bottom: 2px solid #555;
-            color: var(--gold-primary); font-size: 1.2rem; text-align: center;
-            width: 100%; padding: 10px; margin-bottom: 20px; outline: none;
+            background: rgba(255,255,255,0.1); border: 1px solid #666; border-radius: 8px;
+            color: #fff; font-size: 1.1rem; text-align: center;
+            width: 100%; padding: 12px; margin-bottom: 20px; outline: none;
             font-family: 'Playfair Display', serif;
         }
-        .custom-input:focus { border-bottom-color: var(--gold-primary); }
+        .custom-input:focus { border-color: var(--gold-primary); background: rgba(0,0,0,0.3); }
+        .custom-input::placeholder { color: #aaa; }
 
-        @keyframes pulseText { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-        @keyframes floatHorse { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes pulseText { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        @keyframes drawLine { to { stroke-dashoffset: 0; } }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        @media (max-width: 480px) { .main-title { font-size: 2.5rem; } .card-3d { padding: 2rem 1rem; } }
+        
+        @media (max-width: 480px) { 
+            .main-title { font-size: 2.5rem; } 
+            .card-3d { padding: 2rem 1.5rem; } 
+            .gate-text { font-size: 0.9rem; }
+        }
     </style>
 </head>
 <body>
@@ -177,29 +197,25 @@
     <div id="gate-overlay" onclick="openGates()">
         <div class="gate-panel gate-left"><div class="gate-pattern"></div><div class="knocker"></div></div>
         <div class="gate-panel gate-right"><div class="gate-pattern"></div><div class="knocker"></div></div>
-        <div class="gate-text">CHẠM VÀO CỬA ĐỂ MỞ</div>
+        <div class="gate-text">CHẠM ĐỂ MỞ CỔNG TÀI LỘC</div>
     </div>
 
-    <!-- 3D SCENE -->
+    <!-- MAIN CARD -->
     <div id="scene">
         <div class="card-3d" id="card">
-            <div class="pop-out-deep">
-                <svg class="horse-svg" viewBox="0 0 100 100" fill="none">
-                     <path class="horse-path" d="M25,80 C25,80 20,70 30,60 C40,50 35,40 35,30 C35,15 50,5 60,10 C70,15 75,25 70,35 C65,45 80,50 85,60 C90,70 80,85 80,85 L70,80 C70,80 75,65 60,60 C45,55 45,75 45,75 L25,80 Z M60,10 C60,10 60,0 50,5 M35,30 C35,30 25,25 30,15" />
-                </svg>
-            </div>
+            <!-- Horse Icon -->
+            <svg class="horse-svg" viewBox="0 0 100 100" fill="none">
+                 <path class="horse-path" d="M25,80 C25,80 20,70 30,60 C40,50 35,40 35,30 C35,15 50,5 60,10 C70,15 75,25 70,35 C65,45 80,50 85,60 C90,70 80,85 80,85 L70,80 C70,80 75,65 60,60 C45,55 45,75 45,75 L25,80 Z M60,10 C60,10 60,0 50,5 M35,30 C35,30 25,25 30,15" />
+            </svg>
             
-            <div class="pop-out">
-                <div style="font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; color: #bbb; margin-bottom: 5px;">Xuân Bính Ngọ 2026</div>
-                <h1 class="main-title" id="recipient-display">Chúc Mừng</h1>
-            </div>
+            <div class="year-text">Xuân Bính Ngọ 2026</div>
+            <h1 class="main-title" id="recipient-display">Chúc Mừng</h1>
 
-            <div class="wish-container pop-out">
+            <div class="wish-container">
                 <span id="typewriter-text"></span><span class="cursor"></span>
             </div>
 
-            <!-- BUTTONS: Mouseenter triggers 'freeze' logic -->
-            <div class="btn-group" onmouseenter="freezeCard()" onmouseleave="unfreezeCard()">
+            <div class="btn-group">
                 <button class="vip-btn" onclick="drawFortune()">Gieo Quẻ</button>
                 <button class="vip-btn" onclick="openShareModal()">Gửi Thiệp</button>
             </div>
@@ -208,15 +224,17 @@
             <div id="fortune-modal" class="modal-overlay">
                 <div class="modal-title">Quẻ Bói Đầu Năm</div>
                 <div class="fortune-text" id="fortune-result"></div>
-                <button class="vip-btn" style="font-size: 0.7rem;" onclick="closeAllModals()">Cảm ơn</button>
+                <button class="vip-btn" style="font-size: 0.75rem; padding: 10px 20px;" onclick="closeAllModals()">Cảm ơn</button>
             </div>
 
-            <!-- SHARE MODAL (INPUT NAME) -->
+            <!-- SHARE MODAL -->
             <div id="share-modal" class="modal-overlay">
                 <div class="modal-title">Gửi Lời Chúc Tới</div>
-                <input type="text" id="name-input" class="custom-input" placeholder="Nhập tên người nhận (VD: Sếp, Vợ)">
-                <button class="vip-btn" style="font-size: 0.7rem;" onclick="generateLink()">Sao chép Link</button>
-                <button class="vip-btn" style="font-size: 0.7rem; border-color: #555; color: #aaa;" onclick="closeAllModals()">Đóng</button>
+                <input type="text" id="name-input" class="custom-input" placeholder="Nhập tên (VD: Sếp Tùng)">
+                <button class="vip-btn" style="font-size: 0.75rem;" onclick="generateLink()">Sao chép Link</button>
+                <div style="margin-top:10px;">
+                    <button class="vip-btn" style="background:transparent; border:none; color:#aaa; font-size: 0.7rem; box-shadow:none;" onclick="closeAllModals()">Đóng</button>
+                </div>
             </div>
         </div>
     </div>
@@ -237,7 +255,8 @@
         function openGates() {
             if(isOpened) return; isOpened = true;
             document.body.classList.add('gates-open');
-            launchMassiveFireworks();
+            launchMassiveFireworks(); // Bắn pháo hoa chào mừng
+            
             setTimeout(() => {
                 const scene = document.getElementById('scene');
                 scene.style.display = 'block';
@@ -247,30 +266,7 @@
             }, 800);
         }
 
-        // --- 3. 3D & FREEZE LOGIC (THE FIX) ---
-        const card = document.getElementById('card');
-        const container = document.body;
-        let isFrozen = false; // Flag to stop rotation
-
-        function freezeCard() { isFrozen = true; card.style.transform = `rotateY(0deg) rotateX(0deg)`; }
-        function unfreezeCard() { isFrozen = false; }
-
-        container.addEventListener('mousemove', (e) => {
-            if(!isOpened || isFrozen) return; // Don't move if frozen
-            let xAxis = (window.innerWidth / 2 - e.pageX) / 40;
-            let yAxis = (window.innerHeight / 2 - e.pageY) / 40;
-            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
-        });
-
-        window.addEventListener("deviceorientation", (e) => {
-            if(!isOpened || isFrozen) return;
-            let yAxis = e.beta / 3; let xAxis = e.gamma / 3; 
-            if (xAxis > 15) xAxis = 15; if (xAxis < -15) xAxis = -15;
-            if (yAxis > 15) yAxis = 15; if (yAxis < -15) yAxis = -15;
-            card.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg)`;
-        });
-
-        // --- 4. MODALS & FEATURES ---
+        // --- 3. UTILS & MODALS ---
         function typeWriter(text, i) {
             if (i < text.length) {
                 document.getElementById("typewriter-text").innerHTML += text.charAt(i);
@@ -280,28 +276,24 @@
 
         function closeAllModals() {
             document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('active'));
-            unfreezeCard();
         }
 
-        // Fortune Logic
         const fortunes = [
             "Đại Cát: Tiền vào như nước, tình duyên phơi phới.",
             "Thượng Thượng: Quý nhân phù trợ, mọi việc suôn sẻ.",
             "Lộc Tồn: Năm nay có lộc đất đai hoặc thăng chức.",
             "Đào Hoa: Tình duyên rực rỡ, người cũ không rủ cũng tới.",
-            "Hỷ Thần: Trong nhà có tin vui, thêm người thêm của."
+            "Hỷ Thần: Trong nhà có tin vui, thêm người thêm của.",
+            "Thái Bình: Một năm an nhiên, sức khỏe dồi dào."
         ];
         function drawFortune() {
-            freezeCard(); // Stop moving while reading
             const result = document.getElementById('fortune-result');
             result.innerText = fortunes[Math.floor(Math.random() * fortunes.length)];
             document.getElementById('fortune-modal').classList.add('active');
             launchMassiveFireworks();
         }
 
-        // Share Logic
         function openShareModal() {
-            freezeCard(); // Stop moving while typing
             document.getElementById('share-modal').classList.add('active');
             setTimeout(() => document.getElementById('name-input').focus(), 100);
         }
@@ -309,11 +301,9 @@
         function generateLink() {
             const name = document.getElementById('name-input').value.trim();
             if(!name) { alert("Bạn chưa nhập tên!"); return; }
-            
             const url = new URL(window.location.href);
             url.searchParams.set('to', name);
             const shareUrl = url.toString();
-
             navigator.clipboard.writeText(shareUrl).then(() => {
                 alert("Đã sao chép Link! Gửi ngay cho " + name + " nhé.");
                 closeAllModals();
@@ -323,64 +313,163 @@
             });
         }
 
-        // --- 5. CANVAS ---
+        // --- 4. CANVAS ENGINE (RESTORED FIREWORKS & BLOSSOMS) ---
         const canvas = document.getElementById('main-canvas');
         const ctx = canvas.getContext('2d');
-        let width, height, fireworks = [], particles = [];
-        const random = (min, max) => Math.random() * (max - min) + min;
+        let width, height;
+        let fireworks = [];
+        let particles = [];
+        let blossoms = []; // Khôi phục mảng hoa
 
         function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
         resize(); window.addEventListener('resize', resize);
         
-        function launchMassiveFireworks() {
-            for(let i=0; i<8; i++) {
-                setTimeout(() => {
-                    fireworks.push(new Firework(
-                        width * 0.2 + Math.random() * width * 0.6,
-                        height * 0.2 + Math.random() * height * 0.4
-                    ));
-                }, i * 200);
+        const random = (min, max) => Math.random() * (max - min) + min;
+
+        // --- Blossom Class (Hoa Đào/Mai) ---
+        class Blossom {
+            constructor() {
+                this.reset();
+                this.y = random(0, height); // Init everywhere
+            }
+            reset() {
+                this.x = random(0, width);
+                this.y = -20;
+                this.size = random(3, 8);
+                this.speedY = random(0.5, 2);
+                this.sway = random(0, 6); 
+                this.swaySpeed = random(0.01, 0.03);
+                this.type = Math.random() > 0.5 ? 'peach' : 'apricot'; // 50% Đào, 50% Mai
+                this.color = this.type === 'peach' ? '#ff9999' : '#fff06b';
+                this.rotation = random(0, 360);
+                this.spin = random(-0.05, 0.05);
+            }
+            update() {
+                this.y += this.speedY;
+                this.sway += this.swaySpeed;
+                this.x += Math.sin(this.sway) * 0.5;
+                this.rotation += this.spin;
+                if (this.y > height) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.fillStyle = this.color;
+                // Vẽ cánh hoa đơn giản
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size, 0, Math.PI*2);
+                ctx.fill();
+                ctx.restore();
             }
         }
+        // Init Blossoms
+        for(let i=0; i<40; i++) blossoms.push(new Blossom());
 
+        // --- Firework Classes ---
         class Firework {
             constructor(tx, ty) {
                 this.x = width/2; this.y = height; this.tx = tx; this.ty = ty;
-                this.speed = 5; this.angle = Math.atan2(ty - height, tx - width/2); this.coords = [];
+                this.speed = random(4, 7); 
+                this.angle = Math.atan2(ty - height, tx - width/2); 
+                this.coords = [];
+                this.brightness = random(50, 80);
             }
             update(i) {
                 this.coords.push([this.x, this.y]);
                 if(this.coords.length > 4) this.coords.shift();
                 this.x += Math.cos(this.angle) * this.speed;
                 this.y += Math.sin(this.angle) * this.speed;
-                if (this.y <= this.ty) { createParticles(this.tx, this.ty); fireworks.splice(i, 1); }
+                // Detonate condition
+                const dist = Math.hypot(this.x - this.tx, this.y - this.ty);
+                if (dist < this.speed || this.y <= this.ty) {
+                    createParticles(this.tx, this.ty);
+                    fireworks.splice(i, 1);
+                }
             }
             draw() {
-                ctx.beginPath(); if(this.coords.length) ctx.moveTo(this.coords[0][0], this.coords[0][1]);
-                ctx.lineTo(this.x, this.y); ctx.strokeStyle = '#FFD700'; ctx.stroke();
+                ctx.beginPath();
+                if(this.coords.length) ctx.moveTo(this.coords[0][0], this.coords[0][1]);
+                ctx.lineTo(this.x, this.y);
+                ctx.strokeStyle = `hsl(${random(30, 60)}, 100%, ${this.brightness}%)`; // Goldish trails
+                ctx.lineWidth = 2;
+                ctx.stroke();
             }
         }
+
         class Particle {
             constructor(x, y) {
-                this.x = x; this.y = y; this.alpha = 1; this.angle = random(0, Math.PI*2); this.vel = random(1, 6); this.hue = random(0, 360);
+                this.x = x; this.y = y; this.alpha = 1;
+                this.angle = random(0, Math.PI*2); 
+                this.vel = random(1, 8); 
+                this.hue = random(0, 360);
+                this.decay = random(0.015, 0.03);
             }
             update(i) {
-                this.x += Math.cos(this.angle) * this.vel; this.y += Math.sin(this.angle) * this.vel + 0.5;
-                this.alpha -= 0.02; if (this.alpha <= 0) particles.splice(i, 1);
+                this.vel *= 0.96; // Friction
+                this.x += Math.cos(this.angle) * this.vel;
+                this.y += Math.sin(this.angle) * this.vel + 1.5; // Gravity
+                this.alpha -= this.decay;
+                if (this.alpha <= 0) particles.splice(i, 1);
             }
             draw() {
-                ctx.globalAlpha = this.alpha; ctx.fillStyle = `hsl(${this.hue}, 100%, 60%)`;
-                ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1;
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = `hsl(${this.hue}, 100%, 60%)`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill(); 
+                ctx.globalAlpha = 1;
             }
         }
-        function createParticles(x, y) { for(let i=0; i<30; i++) particles.push(new Particle(x, y)); }
+
+        function createParticles(x, y) { for(let i=0; i<40; i++) particles.push(new Particle(x, y)); }
+
+        function launchMassiveFireworks() {
+            // Bắn chùm 8 quả
+            for(let i=0; i<8; i++) {
+                setTimeout(() => {
+                    fireworks.push(new Firework(
+                        width * 0.2 + Math.random() * width * 0.6,
+                        height * 0.15 + Math.random() * height * 0.4
+                    ));
+                }, i * 300);
+            }
+        }
+
+        // Loop
         function loop() {
             requestAnimationFrame(loop);
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; ctx.fillRect(0, 0, width, height);
+            // Trail effect background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; 
+            ctx.fillRect(0, 0, width, height);
+
+            // Update & Draw Fireworks
             fireworks.forEach((f, i) => { f.update(i); f.draw(); });
             particles.forEach((p, i) => { p.update(i); p.draw(); });
+
+            // Update & Draw Blossoms (Vẽ sau để hoa nổi lên trên nền tối)
+            blossoms.forEach(b => { b.update(); b.draw(); });
+
+            // Auto random firework occasionally
+            if(Math.random() < 0.03) { // 3% chance per frame
+                fireworks.push(new Firework(
+                    random(width * 0.1, width * 0.9), 
+                    random(height * 0.1, height * 0.5)
+                ));
+            }
         }
         loop();
+        
+        // Click to shoot firework
+        document.addEventListener('mousedown', (e) => {
+             // Only if gates opened and not clicking on card
+             if(isOpened && e.target.id !== 'name-input') {
+                 fireworks.push(new Firework(e.clientX, e.clientY));
+             }
+        });
+        document.addEventListener('touchstart', (e) => {
+             if(isOpened && e.target.id !== 'name-input') {
+                 fireworks.push(new Firework(e.touches[0].clientX, e.touches[0].clientY));
+             }
+        });
     </script>
 </body>
 </html>
