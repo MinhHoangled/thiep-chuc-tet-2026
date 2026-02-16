@@ -4,400 +4,459 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chúc Mừng Năm Mới 2026 - Xuân Bính Ngọ</title>
-    <meta name="theme-color" content="#1F1C18">
-    <meta name="description" content="Thiệp chúc mừng năm mới Bính Ngọ 2026">
+    <meta name="theme-color" content="#0f0c29">
     
-    <!-- Typography: Importing Premium Google Fonts -->
+    <!-- Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-gradient-start: #1F1C18;
-            --bg-gradient-end: #8E0E00;
             --gold-primary: #FFD700;
-            --gold-secondary: #DAA520;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 215, 0, 0.15);
-            --font-script: 'Dancing Script', cursive;
-            --font-serif: 'Playfair Display', serif;
+            --gold-shine: #FFFACD;
+            --red-deep: #8E0E00;
+            --glass-bg: rgba(20, 20, 20, 0.4);
+            --border-glow: rgba(255, 215, 0, 0.4);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+        /* Allow user select on inputs/buttons to ensure interaction works */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { user-select: none; }
+        button, input { user-select: auto; }
 
         body {
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            background: #000;
             color: #fff;
-            font-family: var(--font-serif);
             height: 100vh;
-            overflow: hidden; /* Prevent scroll for immersive feel */
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Playfair Display', serif;
+            perspective: 1200px; /* Increased perspective for less distortion */
         }
 
-        /* Background Canvas Layer */
-        #particle-canvas {
+        #main-canvas {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
+            pointer-events: none; /* Pass clicks through canvas */
         }
 
-        /* Glassmorphism Card Container */
-        .card-container {
+        /* --- CINEMATIC GATES --- */
+        #gate-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 999;
+            display: flex;
+            transition: opacity 1s ease; /* Fade out container */
+        }
+
+        .gate-panel {
+            width: 50%; height: 100%;
+            background: linear-gradient(135deg, #4a0000 0%, #220000 100%);
+            position: relative;
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid #330000;
+            box-shadow: inset 0 0 50px #000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .gate-left { transform-origin: left; border-right: 1px solid var(--gold-primary); }
+        .gate-right { transform-origin: right; border-left: 1px solid var(--gold-primary); }
+
+        .gate-pattern {
+            position: absolute; width: 80%; height: 80%;
+            border: 2px solid rgba(255, 215, 0, 0.1); top: 10%;
+            pointer-events: none;
+        }
+        .gate-pattern::before {
+            content: ''; position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 120px; height: 120px; border-radius: 50%;
+            border: 4px solid var(--gold-primary);
+            background: radial-gradient(circle, #800000, #300000);
+            box-shadow: 0 0 20px var(--gold-primary);
+        }
+        
+        .knocker {
+            width: 80px; height: 80px; border-radius: 50%;
+            border: 5px solid var(--gold-primary);
+            position: absolute; top: 50%; transform: translateY(-50%);
+            cursor: pointer; transition: all 0.3s;
+        }
+        .gate-left .knocker { right: -40px; z-index: 2; background: #500; }
+        .gate-right .knocker { left: -40px; z-index: 2; background: #500; }
+
+        .gate-text {
+            position: absolute; width: 100%; text-align: center; top: 70%;
+            color: var(--gold-primary); font-size: 1.2rem; letter-spacing: 4px;
+            text-transform: uppercase; animation: pulseText 2s infinite; pointer-events: none;
+        }
+
+        /* Opening Animation Classes */
+        .gates-open .gate-left { transform: perspective(1000px) rotateY(-110deg); }
+        .gates-open .gate-right { transform: perspective(1000px) rotateY(110deg); }
+        
+        /* Helper class to remove gates from DOM flow */
+        .gates-removed { display: none !important; }
+
+        /* --- 3D CARD CONTAINER --- */
+        #scene {
             position: relative;
             z-index: 10;
-            width: 90%;
-            max-width: 500px;
+            width: 90%; max-width: 500px;
+            height: auto;
+            transform-style: preserve-3d;
+            display: none; opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .card-3d {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 30px;
             padding: 3rem 2rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             text-align: center;
-            animation: floatUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            opacity: 0;
-            transform: translateY(30px);
+            transform-style: preserve-3d;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 30px rgba(255, 215, 0, 0.05);
+            transition: transform 0.1s linear; /* Smooths out jitter */
         }
 
-        /* SVG Horse Animation */
-        .horse-icon {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 1.5rem;
+        .card-3d::after {
+            content: ""; position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0; border-radius: 30px;
+            background: linear-gradient(125deg, transparent 20%, rgba(255,255,255,0.1) 30%, rgba(255,255,255,0.0) 40%);
+            pointer-events: none; transform: translateZ(1px);
         }
 
+        .pop-out { transform: translateZ(40px); }
+        .pop-out-deep { transform: translateZ(70px); }
+
+        .horse-svg {
+            width: 120px; height: 120px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+            animation: floatHorse 6s ease-in-out infinite;
+        }
         .horse-path {
-            fill: none;
-            stroke: var(--gold-primary);
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: drawLine 2.5s ease-out forwards 0.5s, fillGold 1s ease-out forwards 2.5s;
-        }
-
-        /* Typography Styling */
-        .year-label {
-            font-family: var(--font-serif);
-            letter-spacing: 4px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
+            fill: none; stroke: var(--gold-primary); stroke-width: 2;
+            stroke-dasharray: 1000; stroke-dashoffset: 0;
+            animation: drawLine 3s ease forwards;
         }
 
         .main-title {
-            font-family: var(--font-script);
-            font-size: 3rem;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(to right, #FFF, var(--gold-primary), #FFF);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+            font-family: 'Dancing Script', cursive; font-size: 3.5rem;
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text; color: transparent;
+            margin: 1rem 0; text-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .greeting-text {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #e0e0e0;
-            margin-bottom: 2.5rem;
-            font-weight: 300;
+        .wish-container {
+            min-height: 80px; font-size: 1.1rem; line-height: 1.6;
+            color: #eee; margin-bottom: 2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
-        /* Dynamic Name Highlight */
-        .recipient-name {
-            color: var(--gold-primary);
-            font-weight: 700;
-            text-decoration: none;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
-            padding-bottom: 2px;
+        .cursor {
+            display: inline-block; width: 2px; height: 1.2em;
+            background-color: var(--gold-primary);
+            animation: blink 1s step-end infinite; vertical-align: text-bottom;
         }
 
-        /* Interactive Elements */
-        .action-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
+        .btn-group {
+            display: flex; gap: 15px; justify-content: center;
+            transform: translateZ(60px); /* Push buttons further out */
+            position: relative;
+            z-index: 100; /* Ensure high z-index */
         }
 
-        .btn {
-            background: rgba(255, 215, 0, 0.1);
+        .vip-btn {
+            background: rgba(0,0,0,0.3); /* Slight background for better hit target */
             border: 1px solid var(--gold-primary);
             color: var(--gold-primary);
-            padding: 0.8rem 1.5rem;
+            padding: 12px 25px;
             border-radius: 50px;
-            font-family: var(--font-serif);
-            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            pointer-events: auto; /* Force clickable */
         }
 
-        .btn:hover {
-            background: var(--gold-primary);
-            color: #1F1C18;
-            box-shadow: 0 0 15px var(--gold-primary);
+        .vip-btn::before {
+            content: ''; position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent);
+            transition: 0.5s;
+            pointer-events: none; /* Ignore clicks on sheen */
+        }
+        .vip-btn:hover::before { left: 100%; }
+        .vip-btn:hover {
+            background: var(--gold-primary); color: #000;
+            box-shadow: 0 0 30px var(--gold-primary);
         }
 
-        .btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Toast Notification */
-        #toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: rgba(30, 30, 30, 0.9);
-            color: var(--gold-primary);
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            border: 1px solid var(--gold-secondary);
-            opacity: 0;
+        /* Modal */
+        #fortune-modal {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) translateZ(150px) scale(0); /* Higher Z */
+            background: #1a0000; border: 2px solid var(--gold-primary);
+            padding: 2rem; width: 85%; border-radius: 10px;
+            text-align: center; opacity: 0;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 100;
-            white-space: nowrap;
+            pointer-events: none; box-shadow: 0 0 50px #000;
+            z-index: 200;
         }
+        #fortune-modal.active {
+            transform: translate(-50%, -50%) translateZ(150px) scale(1);
+            opacity: 1; pointer-events: auto;
+        }
+        .fortune-text { font-family: 'Dancing Script'; font-size: 1.5rem; color: var(--gold-primary); margin-bottom: 1rem; }
 
-        #toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
+        @keyframes pulseText { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes floatHorse { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* Animations */
-        @keyframes floatUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes drawLine {
-            to { stroke-dashoffset: 0; }
-        }
-        
-        @keyframes fillGold {
-            to { fill: rgba(255, 215, 0, 0.1); }
-        }
-
-        /* Responsive Adjustments */
         @media (max-width: 480px) {
             .main-title { font-size: 2.5rem; }
-            .card-container { width: 95%; padding: 2rem 1.5rem; }
+            .card-3d { padding: 2rem 1rem; }
+            .gate-text { font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Performance Critical: Canvas Layer -->
-    <canvas id="particle-canvas"></canvas>
+    <canvas id="main-canvas"></canvas>
 
-    <!-- UI Layer -->
-    <div class="card-container">
-        <!-- Stylized Abstract Horse SVG -->
-        <svg class="horse-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Artistic Abstract Horse Head Profile -->
-            <path class="horse-path" d="M25,80 C25,80 20,70 30,60 C40,50 35,40 35,30 C35,15 50,5 60,10 C70,15 75,25 70,35 C65,45 80,50 85,60 C90,70 80,85 80,85 L70,80 C70,80 75,65 60,60 C45,55 45,75 45,75 L25,80 Z M60,10 C60,10 60,0 50,5 M35,30 C35,30 25,25 30,15" />
-        </svg>
+    <!-- 1. CINEMATIC GATES -->
+    <div id="gate-overlay" onclick="openGates()">
+        <div class="gate-panel gate-left">
+            <div class="gate-pattern"></div>
+            <div class="knocker"></div>
+        </div>
+        <div class="gate-panel gate-right">
+            <div class="gate-pattern"></div>
+            <div class="knocker"></div>
+        </div>
+        <div class="gate-text">CHẠM ĐỂ MỞ CỔNG TÀI LỘC</div>
+    </div>
 
-        <div class="year-label">Xuân Bính Ngọ • 2026</div>
-        
-        <h1 class="main-title" id="greeting-title">Chúc Mừng Năm Mới</h1>
-        
-        <p class="greeting-text">
-            Kính chúc một năm mới An Khang Thịnh Vượng, Vạn Sự Như Ý, Tấn Tài Tấn Lộc.
-        </p>
+    <!-- 2. 3D SCENE -->
+    <div id="scene">
+        <div class="card-3d" id="card">
+            <div class="pop-out-deep">
+                <svg class="horse-svg" viewBox="0 0 100 100" fill="none">
+                     <path class="horse-path" d="M25,80 C25,80 20,70 30,60 C40,50 35,40 35,30 C35,15 50,5 60,10 C70,15 75,25 70,35 C65,45 80,50 85,60 C90,70 80,85 80,85 L70,80 C70,80 75,65 60,60 C45,55 45,75 45,75 L25,80 Z M60,10 C60,10 60,0 50,5 M35,30 C35,30 25,25 30,15" />
+                </svg>
+            </div>
+            
+            <div class="pop-out">
+                <div style="font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; color: #bbb; margin-bottom: 5px;">Xuân Bính Ngọ 2026</div>
+                <h1 class="main-title" id="recipient-display">Chúc Mừng</h1>
+            </div>
 
-        <div class="action-group">
-            <button class="btn" onclick="shareCard()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
-                Gửi Lời Chúc
-            </button>
+            <div class="wish-container pop-out">
+                <span id="typewriter-text"></span><span class="cursor"></span>
+            </div>
+
+            <div class="btn-group">
+                <button class="vip-btn" onclick="drawFortune()">Gieo Quẻ</button>
+                <button class="vip-btn" onclick="shareCard()">Gửi Thiệp</button>
+            </div>
+            
+            <!-- Hidden Fortune Modal -->
+            <div id="fortune-modal">
+                <div style="color: #fff; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">Quẻ Bói Đầu Năm</div>
+                <div class="fortune-text" id="fortune-result"></div>
+                <button class="vip-btn" style="font-size: 0.6rem; padding: 8px 16px;" onclick="closeFortune()">Cảm ơn</button>
+            </div>
         </div>
     </div>
 
-    <div id="toast">Đã sao chép link thiệp!</div>
-
     <script>
-        /**
-         * LOGIC LAYER: Dynamic Personalization & Interaction
-         */
-        document.addEventListener('DOMContentLoaded', () => {
-            const titleEl = document.getElementById('greeting-title');
+        // --- 1. SETUP ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const toName = urlParams.get('to') ? urlParams.get('to').replace(/[<>]/g, "") : null;
+        const recipientDisplay = document.getElementById('recipient-display');
+        const baseWish = toName 
+            ? `Năm mới chúc ${toName} tấn tài tấn lộc, công danh rạng rỡ, vạn sự hanh thông.` 
+            : "Cung chúc tân xuân phước vĩnh cửu. Chúc trong gia quyến được an khương.";
+
+        if(toName) recipientDisplay.innerHTML = `Gửi ${toName}`;
+        else recipientDisplay.innerHTML = "Vạn Sự Như Ý";
+
+        // --- 2. GATES LOGIC ---
+        let isOpened = false;
+        function openGates() {
+            if(isOpened) return;
+            isOpened = true;
             
-            // 1. Parse URL Parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const recipientName = urlParams.get('to');
+            document.body.classList.add('gates-open');
+            launchMassiveFireworks();
 
-            // 2. Dynamic Rendering
-            if (recipientName) {
-                // Sanitize input to prevent basic HTML injection
-                const safeName = recipientName.replace(/[<>]/g, ""); 
-                titleEl.innerHTML = `Chúc ${safeName}<br>Năm Mới An Khang`;
-                document.title = `Lời chúc Tết gửi tới ${safeName}`;
-            } else {
-                titleEl.innerHTML = `Chúc Mừng Năm Mới<br>2026`;
+            setTimeout(() => {
+                const scene = document.getElementById('scene');
+                scene.style.display = 'block';
+                void scene.offsetWidth; scene.style.opacity = '1';
+                
+                // COMPLETELY REMOVE GATES to prevent click blocking
+                setTimeout(() => {
+                    document.getElementById('gate-overlay').classList.add('gates-removed');
+                }, 1000);
+
+                typeWriter(baseWish, 0);
+            }, 800);
+        }
+
+        function launchMassiveFireworks() {
+            for(let i=0; i<10; i++) {
+                setTimeout(() => {
+                    fireworks.push(new Firework(
+                        window.innerWidth * 0.2 + Math.random() * window.innerWidth * 0.6,
+                        window.innerHeight * 0.3 + Math.random() * window.innerHeight * 0.4
+                    ));
+                }, i * 200);
             }
+        }
 
-            // 3. Canvas Animation Engine (Golden Embers)
-            initCanvas();
+        // --- 3. 3D EFFECT (OPTIMIZED FOR CLICKS) ---
+        const card = document.getElementById('card');
+        const container = document.body;
+
+        container.addEventListener('mousemove', (e) => {
+            if(!isOpened) return;
+            // Reduced sensitivity (divided by 40 instead of 25) to prevent jitter during clicks
+            let xAxis = (window.innerWidth / 2 - e.pageX) / 40;
+            let yAxis = (window.innerHeight / 2 - e.pageY) / 40;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
         });
 
-        // Share Functionality
+        window.addEventListener("deviceorientation", (e) => {
+            if(!isOpened) return;
+            let yAxis = e.beta / 3; 
+            let xAxis = e.gamma / 3; 
+            if (xAxis > 15) xAxis = 15; if (xAxis < -15) xAxis = -15;
+            if (yAxis > 15) yAxis = 15; if (yAxis < -15) yAxis = -15;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg)`;
+        });
+
+        // --- 4. UTILS ---
+        function typeWriter(text, i) {
+            if (i < text.length) {
+                document.getElementById("typewriter-text").innerHTML += text.charAt(i);
+                setTimeout(() => typeWriter(text, i + 1), 50);
+            } else {
+                document.querySelector(".cursor").style.display = 'none';
+            }
+        }
+
+        const fortunes = [
+            "Đại Cát: Tiền vào như nước, tình duyên phơi phới.",
+            "Thượng Thượng: Quý nhân phù trợ, mọi việc suôn sẻ.",
+            "Lộc Tồn: Năm nay có lộc đất đai hoặc thăng chức.",
+            "Đào Hoa: Tình duyên rực rỡ, người cũ không rủ cũng tới.",
+            "Hỷ Thần: Trong nhà có tin vui, thêm người thêm của."
+        ];
+        
+        function drawFortune() {
+            const modal = document.getElementById('fortune-modal');
+            const result = document.getElementById('fortune-result');
+            result.innerText = fortunes[Math.floor(Math.random() * fortunes.length)];
+            modal.classList.add('active');
+            launchMassiveFireworks();
+        }
+
+        function closeFortune() {
+            document.getElementById('fortune-modal').classList.remove('active');
+        }
+
         function shareCard() {
             let shareUrl = window.location.href;
-            
-            // If no name is set, prompt user to create one
             const urlParams = new URLSearchParams(window.location.search);
             if (!urlParams.has('to')) {
-                const name = prompt("Nhập tên người bạn muốn chúc (Ví dụ: Sếp, Vợ Yêu, Anh Tuấn):");
+                const name = prompt("Nhập tên người nhận:");
                 if (name) {
                     const url = new URL(window.location.href);
                     url.searchParams.set('to', name);
                     shareUrl = url.toString();
-                    
-                    // Optional: Redirect to show the user what it looks like
-                    // window.location.href = shareUrl; 
-                } else {
-                    return; // Cancelled
-                }
+                } else return;
             }
-
-            // Clipboard API
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                showToast("Đã sao chép link! Gửi ngay cho người ấy nhé.");
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                prompt("Hãy copy link này gửi cho bạn bè:", shareUrl);
-            });
+            navigator.clipboard.writeText(shareUrl)
+                .then(() => alert("Đã sao chép link! Gửi ngay thôi!"))
+                .catch(() => prompt("Copy link bên dưới:", shareUrl));
         }
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+        // --- 5. VISUALS (CANVAS) ---
+        const canvas = document.getElementById('main-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, fireworks = [], particles = [];
+
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+        resize(); window.addEventListener('resize', resize);
+        
+        const random = (min, max) => Math.random() * (max - min) + min;
+
+        class Firework {
+            constructor(tx, ty) {
+                this.x = width/2; this.y = height; this.tx = tx; this.ty = ty;
+                this.speed = 5; 
+                this.angle = Math.atan2(ty - height, tx - width/2);
+                this.coords = [];
+            }
+            update(i) {
+                this.coords.push([this.x, this.y]);
+                if(this.coords.length > 4) this.coords.shift();
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                if (this.y <= this.ty) {
+                    createParticles(this.tx, this.ty);
+                    fireworks.splice(i, 1);
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                if(this.coords.length) ctx.moveTo(this.coords[0][0], this.coords[0][1]);
+                ctx.lineTo(this.x, this.y);
+                ctx.strokeStyle = '#FFD700'; ctx.stroke();
+            }
         }
 
-        /**
-         * GRAPHICS ENGINE: HTML5 Canvas Particle System
-         */
-        function initCanvas() {
-            const canvas = document.getElementById('particle-canvas');
-            const ctx = canvas.getContext('2d');
-            let width, height;
-            let particles = [];
-
-            // Configuration
-            const particleCount = window.innerWidth < 600 ? 40 : 80; // Performance tuning for mobile
-            const colors = ['#FFD700', '#FFA500', '#FF4500', '#FFF8DC']; // Gold palette
-
-            function resize() {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
+        class Particle {
+            constructor(x, y) {
+                this.x = x; this.y = y; this.alpha = 1;
+                this.angle = random(0, Math.PI*2); this.vel = random(1, 5);
+                this.hue = random(0, 360);
             }
-
-            class Particle {
-                constructor() {
-                    this.reset();
-                    // Initial random y to fill screen immediately
-                    this.y = Math.random() * height; 
-                }
-
-                reset() {
-                    this.x = Math.random() * width;
-                    this.y = height + Math.random() * 100;
-                    this.speed = 0.5 + Math.random() * 1.5;
-                    this.size = Math.random() * 3;
-                    this.color = colors[Math.floor(Math.random() * colors.length)];
-                    this.wobble = Math.random() * Math.PI * 2;
-                    this.wobbleSpeed = 0.02 + Math.random() * 0.03;
-                    this.opacity = 0;
-                    this.fadeIn = true;
-                }
-
-                update() {
-                    // Move Up
-                    this.y -= this.speed;
-                    
-                    // Wobble side to side
-                    this.wobble += this.wobbleSpeed;
-                    this.x += Math.sin(this.wobble) * 0.5;
-
-                    // Opacity Logic (Fade In -> Fade Out)
-                    if (this.fadeIn) {
-                        this.opacity += 0.02;
-                        if (this.opacity >= 1) this.fadeIn = false;
-                    } else {
-                        // Fade out near top
-                        if (this.y < height * 0.2) {
-                            this.opacity -= 0.02;
-                        }
-                    }
-
-                    // Reset if off screen or invisible
-                    if (this.y < -10 || this.opacity <= 0) {
-                        this.reset();
-                    }
-                }
-
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.globalAlpha = Math.max(0, this.opacity);
-                    ctx.fill();
-                    
-                    // Add glow
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = this.color;
-                }
+            update(i) {
+                this.x += Math.cos(this.angle) * this.vel;
+                this.y += Math.sin(this.angle) * this.vel + 1;
+                this.alpha -= 0.02;
+                if (this.alpha <= 0) particles.splice(i, 1);
             }
-
-            // Init
-            resize();
-            window.addEventListener('resize', resize);
-            
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = `hsl(${this.hue}, 100%, 60%)`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill();
+                ctx.globalAlpha = 1;
             }
-
-            // Animation Loop
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
-                // Composite operation for "glowing" overlap effect
-                ctx.globalCompositeOperation = 'screen'; 
-                
-                particles.forEach(p => {
-                    p.update();
-                    p.draw();
-                });
-
-                ctx.globalCompositeOperation = 'source-over';
-                requestAnimationFrame(animate);
-            }
-
-            animate();
         }
+
+        function createParticles(x, y) { for(let i=0; i<30; i++) particles.push(new Particle(x, y)); }
+
+        function loop() {
+            requestAnimationFrame(loop);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; ctx.fillRect(0, 0, width, height);
+            fireworks.forEach((f, i) => { f.update(i); f.draw(); });
+            particles.forEach((p, i) => { p.update(i); p.draw(); });
+        }
+        loop();
     </script>
 </body>
 </html>
